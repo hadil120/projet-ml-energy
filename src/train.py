@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import mlflow
 import mlflow.sklearn
@@ -6,11 +7,17 @@ import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.svm import SVR
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
 from sklearn.metrics import r2_score
+from xgboost import XGBRegressor
 
 # 🔥 MLflow tracking
-mlflow.set_tracking_uri("http://127.0.0.1:5000")
+tracking_uri = os.environ.get("MLFLOW_TRACKING_URI")
+if not tracking_uri:
+    tracking_uri = "http://127.0.0.1:5000"
+    print("Aucun MLFLOW_TRACKING_URI défini. Utilisation du serveur MLflow local par défaut.")
+mlflow.set_tracking_uri(tracking_uri)
+print(f"MLflow tracking URI: {tracking_uri}")
 
 # Charger les données
 df = pd.read_csv("data/processed/full_processed.csv")
@@ -69,7 +76,38 @@ for c in [0.1, 1, 10]:
 # Random Forest
 for n in [50, 100, 200]:
     name = f"RandomForest_{n}"
-    evaluate_model(RandomForestRegressor(n_estimators=n), name, {"n_estimators": n})
+    evaluate_model(RandomForestRegressor(n_estimators=n, random_state=42), name, {"n_estimators": n})
+
+# AdaBoost
+for n in [50, 100, 200]:
+    name = f"AdaBoost_{n}"
+    evaluate_model(
+        AdaBoostRegressor(n_estimators=n, random_state=42),
+        name,
+        {"n_estimators": n}
+    )
+
+# XGBoost
+for n in [50, 100, 200]:
+    for lr in [0.01, 0.1]:
+        name = f"XGBoost_{n}_lr_{str(lr).replace('.', '_')}"
+        params = {
+            "n_estimators": n,
+            "learning_rate": lr,
+            "objective": "reg:squarederror"
+        }
+        evaluate_model(
+            XGBRegressor(
+                n_estimators=n,
+                learning_rate=lr,
+                objective="reg:squarederror",
+                random_state=42,
+                n_jobs=-1,
+                verbosity=0,
+            ),
+            name,
+            params,
+        )
 
 
 # 🔥 Sauvegarde du meilleur modèle

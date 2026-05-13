@@ -64,10 +64,50 @@ Exécutez `train.py` pour entraîner plusieurs modèles, suivre les expériences
 python src/train.py
 ```
 
+Le script entraîne désormais plusieurs modèles :
+- `LinearRegression`
+- `SVR`
+- `RandomForest`
+- `AdaBoost`
+- `XGBoost`
+
 Le meilleur modèle est sauvegardé dans :
 - `models/best_model.pkl`
 
 > Assurez-vous que le serveur MLflow est disponible si vous souhaitez utiliser le suivi MLflow.
+
+### 2.1. Afficher les expériences MLflow
+
+Avant d’exécuter `src/train.py`, lancez d’abord le serveur MLflow dans un terminal séparé :
+
+```bash
+python -m mlflow ui --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --port 5000
+```
+
+Si la commande `mlflow ui` plante dans PowerShell, utilisez directement :
+
+```bash
+python -m mlflow ui --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --port 5000
+```
+
+Ensuite exécutez l’entraînement dans un autre terminal :
+
+```bash
+python src/train.py
+```
+
+Puis ouvrez le navigateur sur :
+
+```text
+http://127.0.0.1:5000
+```
+
+Si vous préférez utiliser une URI MLflow différente, définissez-la avant l’exécution :
+
+```powershell
+$env:MLFLOW_TRACKING_URI="http://127.0.0.1:5000"
+python src/train.py
+```
 
 ### 3. Évaluation du modèle
 

@@ -1,0 +1,5 @@
+﻿mlartifacts/
+mlruns/
+mlflow.db
+src/__pycache__/
+*.pyc
