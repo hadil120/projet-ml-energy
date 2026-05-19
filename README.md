@@ -133,6 +133,34 @@ npm run dev
 - `train.py` exclut à la fois `Heating_Load` et `Cooling_Load` des features.
 - `data_preparation.py` génère des visualisations dans `outputs/`.
 
+### 5. Enregistrement dans le Model Registry
+
+```bash
+python src/Registermodel.py
+```
+
+### 6. Détection du Data Drift
+
+```bash
+pip install evidently
+python src/Detectdrift.py
+```
+
+### 7. API Backend FastAPI
+
+```bash
+pip install fastapi uvicorn
+uvicorn src.api:app --host 0.0.0.0 --port 8000 --reload
+```
+
+API disponible sur : http://localhost:8000
+
+### 8. Pipeline complet (Makefile)
+
+```bash
+make pipeline
+```
+
 ## Dépendances principales
 
 - pandas
